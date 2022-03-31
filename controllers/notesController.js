@@ -6,6 +6,7 @@ module.exports = {
   getNotes: async (req, res) => {
     try {
       const notes = await Notes.findAll({
+        order : [["id", "ASC"]],
         include: [
           {
             model: User,
@@ -108,5 +109,86 @@ module.exports = {
     } catch (error) {
       catchError(error, res);
     }
+  },
+  deleteNotes: async (req, res) => {
+    
+    try {
+      const { notesId } = req.query;
+      const notes = await Notes.destroy({
+        where: {
+          id: notesId,
+        },
+      });
+      if (!notes) {
+        return res.status(404).json({
+          status: "Not Found",
+          message: "The data is empty",
+          result: {},
+        });
+      }
+      res.status(200).json({
+        status: "Success",
+        message: "Successfully delete the data",
+        result: {},
+      });
+    } catch (error) {
+      catchError(error, res);
+    }
+  },
+  updateNotes: async (req, res) => {
+    
+    try {
+      const { notesId } = req.query;
+      const body = req.body;
+
+      const check = await Notes.findOne({
+        where: {
+          id: notesId,
+        }
+      })
+
+      if (!check) {
+        return res.status(404).json({
+          status: "Not Found",
+          message: "The data is empty",
+          result: {},
+        });
+      }
+
+      const schema = joi.object({
+        title : joi.string().required(),
+        description : joi.string().required()
+      });
+      const { error } = schema.validate({
+        ...body
+      });
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
+
+      const notes = await Notes.update(body, {
+        where: {
+          id: notesId,
+        },
+      });
+      if (!notes) {
+        return res.status(404).json({
+          status: "Not Found",
+          message: "The data is empty",
+          result: {},
+        });
+      }
+      res.status(200).json({
+        status: "Success",
+        message: "Successfully update the data",
+        result: {},
+      });
+    } catch (error) {
+      catchError(error, res);
+    }
   }
+  
 };
