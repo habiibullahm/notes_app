@@ -21,5 +21,3 @@ passport.use(
     }
   )
 );
-// passport.use("facebook",
-//     new FacebookStrategy());

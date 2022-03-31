@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 5000;
 
 require("./startup")(app);
 
+
 app.listen(PORT, () =>
   console.log(`notes_app is running at port ${PORT}`)
 );

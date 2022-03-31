@@ -1,4 +1,4 @@
-const { Users } = require("../models");
+const { User } = require("../models");
 const jwt = require("jsonwebtoken");
 const catchError = require("../utils/error");
 
@@ -19,7 +19,7 @@ module.exports = {
             status: "Unauthorized",
             message: "Invalid access token",
           });
-        const user = await Users.findOne({
+        const user = await User.findOne({
           where: {
             id: decoded.id,
           },
