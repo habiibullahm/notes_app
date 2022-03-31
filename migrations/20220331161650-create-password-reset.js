@@ -14,7 +14,7 @@ module.exports = {
       validationCode: {
         type: Sequelize.STRING
       },
-      isDOne: {
+      isDone: {
         type: Sequelize.BOOLEAN
       },
       createdAt: {

@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer")
 
 module.exports = async (email, subject, content) => {
   let transporter = nodemailer.createTransport({
@@ -7,12 +7,12 @@ module.exports = async (email, subject, content) => {
     port: 465,
     secure: true,
     auth: {
-      user: "Lepojutsuu22@gmail.com",
-      pass: "Naraciriha231998",
+      user: "lekturapp16@gmail.com",
+      pass: "admin1234!",
     },
   });
   let info = await transporter.sendMail({
-    from: '"Notes App" <no-reply@lektur.com>',
+    from: '"Lektur App" <no-reply@lektur.com>',
     to: email,
     subject: subject,
     text: "",

@@ -137,7 +137,7 @@ module.exports = {
   resetPassword: async (req, res) => {
     const { validationCode, password } = req.body;
     try {
-      const validate = await ForgotPassword.findOne({
+      const validate = await PasswordReset.findOne({
         where: {
           validationCode,
           isDone: false,
