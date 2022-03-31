@@ -8,45 +8,47 @@ const sendMail = require("../utils/sendMail")
 
 module.exports = {
   register: async (req, res) => {
-    const { fullName, email, password } = req.body;
+    const body = req.body;
     try {
-      const check = await User.findOne({
-        where: {
-          email: email,
-        },
-      });
-      if (check) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "Email already exists",
-        });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await User.create({
-        fullName : fullName,
-        email: email,
-        password: hashedPassword,
-      });
-      const token = jwt.sign(
-        {
-          id: user.id,
-          email: user.email,
-        },
-        process.env.SECRET_TOKEN,
-        { expiresIn: "24h" }
-      );
-      res.status(200).json({
-        status: "Success",
-        message: "Successfully to create an account",
-        result: {
-          token,
-          user: {
-            fullName : user.fullName,
-            email: user.email,
-            image: user.image,
+        const check = await User.findOne({
+          where: {
+            email : body.email,
           },
-        },
-      });
+        });
+        if (check) {
+          return res.status(400).json({
+            status: "Bad Request",
+            message: "Email already exists",
+            result: {},
+          });
+        }
+        const hashedPassword = await bcrypt.hash(body.password, 10);
+        const user = await User.create({
+          fullName: body.fullName,
+          email: body.email,
+          password: hashedPassword,
+        });
+        const token = jwt.sign(
+          {
+            id: user.id,
+            email: user.email,
+          },
+          process.env.SECRET_TOKEN,
+          { expiresIn: "24h" },
+        );
+        res.status(201).json({
+          status: "Success",
+          message: "Successfully to create an account",
+          result: {
+            token,
+            user: {
+              id: user.id,
+              fullName: user.fullName,
+              email: user.email,
+              image: user.image,
+            },
+          },
+        });
     } catch (error) {
       catchError(error, res);
     }

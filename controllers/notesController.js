@@ -86,7 +86,7 @@ module.exports = {
       if (error) {
         return res.status(400).json({
           status: "Bad Request",
-          message: error.message || failed,
+          message: error.message,
         });
       }
       const notes = await Notes.create({
