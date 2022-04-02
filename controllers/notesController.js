@@ -1,21 +1,21 @@
 const joi = require("joi");
-const { User, Notes} = require("../models");
+const { User, Notes } = require("../models");
 const catchError = require("../utils/error");
 
 module.exports = {
   getNotes: async (req, res) => {
     try {
       const notes = await Notes.findAll({
-        order : [["id", "ASC"]],
+        order: [["id", "ASC"]],
         include: [
           {
             model: User,
             as: "creator",
-            attributes: ["id","fullName", "image"],
+            attributes: ["id", "fullName", "image"],
           },
         ],
         attributes: {
-          exclude: ["user_id","updatedAt", "createdAt"],
+          exclude: ["user_id", "updatedAt", "createdAt"],
         },
       });
 
@@ -32,7 +32,7 @@ module.exports = {
         result: notes,
       });
     } catch (error) {
-       catchError(error, res);
+      catchError(error, res);
     }
   },
   getNote: async (req, res) => {
@@ -40,17 +40,17 @@ module.exports = {
     try {
       const notes = await Notes.findOne({
         where: {
-          id : notesId,
+          id: notesId,
         },
         include: [
           {
             model: User,
             as: "creator",
-            attributes: ["id","fullName", "image"],
+            attributes: ["id", "fullName", "image"],
           },
         ],
         attributes: {
-          exclude: ["user_id","updatedAt", "createdAt"],
+          exclude: ["user_id", "updatedAt", "createdAt"],
         },
       });
 
@@ -76,9 +76,9 @@ module.exports = {
       const { user } = req;
 
       const schema = joi.object({
-        title : joi.string().required(),
-        description : joi.string().required(),
-        user_id : joi.number().required(),
+        title: joi.string().required(),
+        description: joi.string().required(),
+        user_id: joi.number().required(),
       });
       const { error } = schema.validate({
         ...body,
@@ -111,7 +111,6 @@ module.exports = {
     }
   },
   deleteNotes: async (req, res) => {
-    
     try {
       const { notesId } = req.query;
       const notes = await Notes.destroy({
@@ -136,7 +135,6 @@ module.exports = {
     }
   },
   updateNotes: async (req, res) => {
-    
     try {
       const { notesId } = req.query;
       const body = req.body;
@@ -144,8 +142,8 @@ module.exports = {
       const check = await Notes.findOne({
         where: {
           id: notesId,
-        }
-      })
+        },
+      });
 
       if (!check) {
         return res.status(404).json({
@@ -156,11 +154,11 @@ module.exports = {
       }
 
       const schema = joi.object({
-        title : joi.string().required(),
-        description : joi.string().required()
+        title: joi.string().required(),
+        description: joi.string().required(),
       });
       const { error } = schema.validate({
-        ...body
+        ...body,
       });
       if (error) {
         return res.status(400).json({
@@ -185,16 +183,14 @@ module.exports = {
         status: "Success",
         message: "Successfully update the data",
         result: {
-          notes : {
-            id : notesId,
-            ...body
-            
+          notes: {
+            id: notesId,
+            ...body,
           },
         },
       });
     } catch (error) {
       catchError(error, res);
     }
-  }
-  
+  },
 };

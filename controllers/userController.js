@@ -2,54 +2,44 @@ const jwt = require("jsonwebtoken");
 const randomstring = require("randomstring");
 const bcrypt = require("bcrypt");
 const { User, PasswordReset } = require("../models");
-const catchError = require("../utils/error")
-const sendMail = require("../utils/sendMail")
-const tokenList = {}
-
+const catchError = require("../utils/error");
+const sendMail = require("../utils/sendMail");
+const tokenList = {};
 
 module.exports = {
   register: async (req, res) => {
     const body = req.body;
     try {
-        const check = await User.findOne({
-          where: {
-            email : body.email,
-          },
-        });
-        if (check) {
-          return res.status(400).json({
-            status: "Bad Request",
-            message: "Email already exists",
-            result: {},
-          });
-        }
-        const hashedPassword = await bcrypt.hash(body.password, 10);
-        const user = await User.create({
-          fullName: body.fullName,
+      const check = await User.findOne({
+        where: {
           email: body.email,
-          password: hashedPassword,
+        },
+      });
+      if (check) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Email already exists",
+          result: {},
         });
-        const token = jwt.sign(
-          {
+      }
+      const hashedPassword = await bcrypt.hash(body.password, 10);
+      const user = await User.create({
+        fullName: body.fullName,
+        email: body.email,
+        password: hashedPassword,
+      });
+      res.status(201).json({
+        status: "Success",
+        message: "Successfully to create an account",
+        result: {
+          user: {
             id: user.id,
+            fullName: user.fullName,
             email: user.email,
+            image: user.image,
           },
-          process.env.SECRET_TOKEN,
-          { expiresIn: "24h" },
-        );
-        res.status(201).json({
-          status: "Success",
-          message: "Successfully to create an account",
-          result: {
-            user: {
-              id: user.id,
-              fullName: user.fullName,
-              email: user.email,
-              image: user.image,
-            },
-            token
-          },
-        });
+        },
+      });
     } catch (error) {
       catchError(error, res);
     }
@@ -98,24 +88,24 @@ module.exports = {
         message: "Logged in successfully",
         result: {
           user: {
-            fullName : user.fullName,
+            fullName: user.fullName,
             email: user.email,
             image: user.image,
           },
           token,
-          refreshToken
+          refreshToken,
         },
       });
     } catch (error) {
       catchError(error, res);
     }
   },
-  refreshToken : async (req, res) => {
-    const { refreshToken , email} = req.body;
+  refreshToken: async (req, res) => {
+    const { refreshToken, email } = req.body;
     try {
       const user = await User.findOne({
         where: {
-          email ,
+          email,
         },
       });
       if (!user) {
@@ -141,14 +131,14 @@ module.exports = {
       const response = {
         status: "Success",
         message: "Successfully update token",
-        token : token,
-      }
-      res.status(200).json({response});
+        token: token,
+      };
+      res.status(200).json({ response });
     } catch (error) {
       catchError(error, res);
     }
   },
-  logout : async (req, res) => {
+  logout: async (req, res) => {
     const { refreshToken } = req.body;
     try {
       if (!refreshToken) {
@@ -160,12 +150,12 @@ module.exports = {
       const response = {
         status: "Success",
         message: "Successfully logout",
-      }
-      res.status(200).json({response});
+      };
+      res.status(200).json({ response });
     } catch (error) {
       catchError(error, res);
     }
-  }, 
+  },
   forgotPassword: async (req, res) => {
     const { email } = req.body;
     try {
@@ -191,7 +181,7 @@ module.exports = {
         "Password Reset",
         `<h1>Password Reset Confirmation</h1>
         <a href="http://localhost:5000/reset-password?code=${passwordReset.validationCode}">Click Here</a>
-        `,
+        `
       );
       res.status(200).json({
         status: "Success",
@@ -222,7 +212,7 @@ module.exports = {
 
       await User.update(
         { password: hashPassword },
-        { where: { email: validate.email } },
+        { where: { email: validate.email } }
       );
       await PasswordReset.update(
         { isDone: true },
@@ -230,7 +220,7 @@ module.exports = {
           where: {
             validationCode,
           },
-        },
+        }
       );
 
       res.status(200).json({

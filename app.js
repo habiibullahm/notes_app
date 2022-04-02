@@ -11,11 +11,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use("/api/v1", routes)
+app.use("/api/v1", routes);
 
-
-app.listen(PORT, () =>
-  console.log(`notes_app is running at port ${PORT}`)
-);
+app.listen(PORT, () => console.log(`notes_app is running at port ${PORT}`));
 
 module.exports = app;
