@@ -158,7 +158,7 @@ module.exports = {
         { password: hashPassword },
         { where: { email: validate.email } },
       );
-      await ForgotPassword.update(
+      await PasswordReset.update(
         { isDone: true },
         {
           where: {

@@ -11,11 +11,11 @@ module.exports = {
           {
             model: User,
             as: "creator",
-            attributes: ["fullName", "image"],
+            attributes: ["id","fullName", "image"],
           },
         ],
         attributes: {
-          exclude: ["updatedAt", "createdAt"],
+          exclude: ["user_id","updatedAt", "createdAt"],
         },
       });
 
@@ -46,11 +46,11 @@ module.exports = {
           {
             model: User,
             as: "creator",
-            attributes: ["fullName", "image"],
+            attributes: ["id","fullName", "image"],
           },
         ],
         attributes: {
-          exclude: ["updatedAt", "createdAt"],
+          exclude: ["user_id","updatedAt", "createdAt"],
         },
       });
 
@@ -184,7 +184,13 @@ module.exports = {
       res.status(200).json({
         status: "Success",
         message: "Successfully update the data",
-        result: {},
+        result: {
+          notes : {
+            id : notesId,
+            ...body
+            
+          },
+        },
       });
     } catch (error) {
       catchError(error, res);
