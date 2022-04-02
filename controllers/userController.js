@@ -72,7 +72,7 @@ module.exports = {
           id: user.id,
         },
         process.env.SECRET_TOKEN,
-        { expiresIn: "24h" }
+        { expiresIn: "1h" }
       );
       const refreshToken = jwt.sign(
         {
