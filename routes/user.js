@@ -7,6 +7,8 @@ const {
   forgotPassword,
   resetPassword,
   loginGoogle,
+  refreshToken,
+  logout,
 } = require("../controllers/userController");
 const {
   registerSchema,
@@ -20,6 +22,8 @@ require("../helpers/passport");
 
 router.post("/register", validate(registerSchema), register);
 router.post("/login", validate(loginSchema), login);
+router.put("/token", refreshToken)
+router.delete("/token", logout)
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
 

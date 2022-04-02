@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { User, PasswordReset } = require("../models");
 const catchError = require("../utils/error")
 const sendMail = require("../utils/sendMail")
+const tokenList = {}
 
 
 module.exports = {
@@ -40,13 +41,13 @@ module.exports = {
           status: "Success",
           message: "Successfully to create an account",
           result: {
-            token,
             user: {
               id: user.id,
               fullName: user.fullName,
               email: user.email,
               image: user.image,
             },
+            token
           },
         });
     } catch (error) {
@@ -83,23 +84,88 @@ module.exports = {
         process.env.SECRET_TOKEN,
         { expiresIn: "24h" }
       );
+      const refreshToken = jwt.sign(
+        {
+          email: user.email,
+          id: user.id,
+        },
+        process.env.REFRESH_TOKEN,
+        { expiresIn: "24h" }
+      );
 
       res.status(200).json({
         status: "Success",
         message: "Logged in successfully",
         result: {
-          token,
           user: {
             fullName : user.fullName,
             email: user.email,
             image: user.image,
           },
+          token,
+          refreshToken
         },
       });
     } catch (error) {
       catchError(error, res);
     }
   },
+  refreshToken : async (req, res) => {
+    const { refreshToken , email} = req.body;
+    try {
+      const user = await User.findOne({
+        where: {
+          email ,
+        },
+      });
+      if (!user) {
+        return res.status(401).json({
+          status: "Unauthorized",
+          message: "user not found",
+        });
+      }
+      if (!refreshToken) {
+        return res.status(401).json({
+          status: "Unauthorized",
+          message: "Invalid refresh token",
+        });
+      }
+      const token = jwt.sign(
+        {
+          email: user.email,
+          id: user.id,
+        },
+        process.env.SECRET_TOKEN,
+        { expiresIn: "1h" }
+      );
+      const response = {
+        status: "Success",
+        message: "Successfully update token",
+        token : token,
+      }
+      res.status(200).json({response});
+    } catch (error) {
+      catchError(error, res);
+    }
+  },
+  logout : async (req, res) => {
+    const { refreshToken } = req.body;
+    try {
+      if (!refreshToken) {
+        return res.status(401).json({
+          status: "Unauthorized",
+          message: "Invalid refresh token",
+        });
+      }
+      const response = {
+        status: "Success",
+        message: "Successfully logout",
+      }
+      res.status(200).json({response});
+    } catch (error) {
+      catchError(error, res);
+    }
+  }, 
   forgotPassword: async (req, res) => {
     const { email } = req.body;
     try {
